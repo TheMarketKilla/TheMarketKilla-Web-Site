@@ -1,40 +1,13 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import Marquee from "react-fast-marquee";
 import { useI18n } from "../i18n/I18nContext";
 import { CaretUp, CaretDown } from "@phosphor-icons/react";
 import { mockPrices } from "../data/mockData";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const LABELS = { BTC: "BITCOIN", ETH: "ETHEREUM", XRP: "RIPPLE", GOLD: "GOLD · PAXG" };
 
 export default function PriceTicker() {
   const { t } = useI18n();
-  const [prices, setPrices] = useState(mockPrices);
-
-  useEffect(() => {
-    let alive = true;
-    const fetchPrices = async () => {
-      try {
-        const r = await axios.get(`${API}/prices`);
-        if (alive && r?.data?.length > 0) setPrices(r.data);
-      } catch (e) {
-        console.warn("prices fetch failed, using fallback data", e?.message);
-      }
-    };
-    fetchPrices();
-    const id = setInterval(fetchPrices, 12000);
-    return () => { alive = false; clearInterval(id); };
-  }, []);
-
-  if (!prices || prices.length === 0) {
-    return (
-      <div className="border-y border-white/5 bg-black/40 py-3 text-center label-mono" data-testid="ticker-loading">
-        Loading market data...
-      </div>
-    );
-  }
-
+  const prices = mockPrices;
   const items = [...prices, ...prices, ...prices];
 
   return (

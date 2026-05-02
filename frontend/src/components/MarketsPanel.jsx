@@ -1,17 +1,7 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { CaretUp, CaretDown } from "@phosphor-icons/react";
 import { useI18n } from "../i18n/I18nContext";
-import { mockPrices, mockKlines, getMockKlines } from "../data/mockData";
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-
-function buildTicksMap(data) {
-  const map = {};
-  (data || []).forEach((p) => { if (p?.key) map[p.key] = p; });
-  return map;
-}
+import { mockPrices, getMockKlines } from "../data/mockData";
 
 const SYMBOLS = [
   { key: "BTC", name: "Bitcoin", code: "BTC/USDT" },
@@ -26,29 +16,17 @@ function formatPrice(v) {
   return v.toFixed(6);
 }
 
-function MarketCard({ s, tick }) {
-  const [candles, setCandles] = useState([]);
+function buildTicksMap(data) {
+  const map = {};
+  (data || []).forEach((p) => { if (p?.key) map[p.key] = p; });
+  return map;
+}
+
+function MarketCard({ s, tick, candles }) {
   const { t } = useI18n();
-
-  useEffect(() => {
-    setCandles(getMockKlines(s.key)?.candles || []);
-    let alive = true;
-    const load = async () => {
-      try {
-        const r = await axios.get(`${API}/klines/${s.key}`, { params: { interval: "1h", limit: 48 } });
-        if (alive && r?.data?.candles) setCandles(r.data.candles);
-      } catch (e) {
-        console.warn(`klines ${s.key} fetch failed, using fallback`, e?.message);
-      }
-    };
-    load();
-    const id = setInterval(load, 60000);
-    return () => { alive = false; clearInterval(id); };
-  }, [s.key]);
-
   const up = tick ? (tick?.change_24h ?? 0) >= 0 : true;
   const stroke = up ? "#10B981" : "#EF4444";
-  const data = candles.map((c) => ({ t: c?.t ?? 0, p: c?.close ?? 0 }));
+  const data = (candles || []).map((c) => ({ t: c?.t ?? 0, p: c?.close ?? 0 }));
   const price = tick?.price;
 
   return (
@@ -110,25 +88,8 @@ function MarketCard({ s, tick }) {
 }
 
 export default function MarketsPanel() {
-  const [ticks, setTicks] = useState(() => buildTicksMap(mockPrices));
   const { t } = useI18n();
-
-  useEffect(() => {
-    let alive = true;
-    const load = async () => {
-      try {
-        const r = await axios.get(`${API}/prices`);
-        if (alive && r?.data) {
-          setTicks(buildTicksMap(r.data));
-        }
-      } catch (e) {
-        console.warn("markets fetch failed, using fallback data", e?.message);
-      }
-    };
-    load();
-    const id = setInterval(load, 12000);
-    return () => { alive = false; clearInterval(id); };
-  }, []);
+  const ticks = buildTicksMap(mockPrices);
 
   return (
     <section id="markets" className="py-24 sm:py-32 px-6 lg:px-12 relative" data-testid="markets-section">
@@ -145,7 +106,12 @@ export default function MarketsPanel() {
         <div className="hairline mb-10" />
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-px bg-white/5">
           {SYMBOLS.map((s) => (
-            <MarketCard key={s.key} s={s} tick={ticks[s.key]} />
+            <MarketCard
+              key={s.key}
+              s={s}
+              tick={ticks[s.key]}
+              candles={getMockKlines(s.key)?.candles || []}
+            />
           ))}
         </div>
       </div>
