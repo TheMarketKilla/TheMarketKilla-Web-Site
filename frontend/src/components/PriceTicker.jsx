@@ -44,14 +44,17 @@ export default function PriceTicker() {
       </div>
       <Marquee gradient gradientColor="#050505" gradientWidth={120} speed={45} pauseOnHover>
         {items.map((p, i) => {
-          const up = p.change_24h >= 0;
+          const price = p?.price ?? 0;
+          const change24h = p?.change_24h ?? 0;
+          const key = p?.key || "unknown";
+          const up = change24h >= 0;
           return (
-            <div key={`${p.key}-${i}`} className="flex items-center gap-3 px-8 font-mono-ui text-sm" data-testid={`ticker-item-${p.key}-${i}`}>
-              <span className="text-zinc-500">{LABELS[p.key] || p.key}</span>
-              <span className="text-white tracking-tight">${p.price >= 1000 ? p.price.toFixed(2) : p.price.toFixed(p.price >= 1 ? 4 : 6)}</span>
+            <div key={`${key}-${i}`} className="flex items-center gap-3 px-8 font-mono-ui text-sm" data-testid={`ticker-item-${key}-${i}`}>
+              <span className="text-zinc-500">{LABELS[key] || key}</span>
+              <span className="text-white tracking-tight">${price >= 1000 ? price.toFixed(2) : price.toFixed(price >= 1 ? 4 : 6)}</span>
               <span className={`flex items-center gap-1 ${up ? "ticker-up" : "ticker-down"}`}>
                 {up ? <CaretUp size={12} weight="fill" /> : <CaretDown size={12} weight="fill" />}
-                {up ? "+" : ""}{p.change_24h.toFixed(2)}%
+                {up ? "+" : ""}{change24h.toFixed(2)}%
               </span>
               <span className="text-zinc-700">|</span>
             </div>
