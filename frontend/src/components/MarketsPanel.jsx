@@ -2,6 +2,7 @@ import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { CaretUp, CaretDown } from "@phosphor-icons/react";
 import { useI18n } from "../i18n/I18nContext";
 import { mockPrices, getMockKlines } from "../data/mockData";
+import { useBinancePrices, useAllBinanceKlines } from "../hooks/useBinanceData";
 
 const SYMBOLS = [
   { key: "BTC", name: "Bitcoin", code: "BTC/USDT" },
@@ -89,7 +90,17 @@ function MarketCard({ s, tick, candles }) {
 
 export default function MarketsPanel() {
   const { t } = useI18n();
-  const ticks = buildTicksMap(mockPrices);
+  const { prices: livePrices } = useBinancePrices();
+  const { allKlines: liveKlines } = useAllBinanceKlines();
+
+  // Usar datos de Binance si están disponibles, si no usar mock
+  const prices = livePrices || mockPrices;
+  const klines = liveKlines || {};
+  const ticks = buildTicksMap(prices);
+
+  const getKlinesForKey = (key) => {
+    return (klines[key] || getMockKlines(key))?.candles || [];
+  };
 
   return (
     <section id="markets" className="py-24 sm:py-32 px-6 lg:px-12 relative" data-testid="markets-section">
@@ -110,7 +121,7 @@ export default function MarketsPanel() {
               key={s.key}
               s={s}
               tick={ticks[s.key]}
-              candles={getMockKlines(s.key)?.candles || []}
+              candles={getKlinesForKey(s.key)}
             />
           ))}
         </div>
@@ -118,3 +129,4 @@ export default function MarketsPanel() {
     </section>
   );
 }
+

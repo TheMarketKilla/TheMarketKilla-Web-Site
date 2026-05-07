@@ -2,12 +2,16 @@ import Marquee from "react-fast-marquee";
 import { useI18n } from "../i18n/I18nContext";
 import { CaretUp, CaretDown } from "@phosphor-icons/react";
 import { mockPrices } from "../data/mockData";
+import { useBinancePrices } from "../hooks/useBinanceData";
 
 const LABELS = { BTC: "BITCOIN", ETH: "ETHEREUM", XRP: "RIPPLE", GOLD: "GOLD · PAXG" };
 
 export default function PriceTicker() {
   const { t } = useI18n();
-  const prices = mockPrices;
+  const { prices: livePrices } = useBinancePrices();
+
+  // Usar datos de Binance si están disponibles, si no usar mock
+  const prices = livePrices || mockPrices;
   const items = [...prices, ...prices, ...prices];
 
   return (
