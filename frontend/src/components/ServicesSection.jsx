@@ -42,12 +42,52 @@ function ServiceCard({ k, item, big }) {
           <div className="w-1.5 h-1.5 bg-champagne pulse-gold" />
         </div>
         <div className="mt-12 lg:mt-16">
-          <h3 className={`font-display ${big ? "text-3xl sm:text-4xl" : "text-2xl"} tracking-tight text-white mb-4 leading-tight`}>
-            {item.title}
-          </h3>
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
+            <h3 className={`font-display ${big ? "text-3xl sm:text-4xl" : "text-2xl"} tracking-tight text-white leading-tight`}>
+              {item.title}
+            </h3>
+            {item.badge && (
+              <span className="label-mono text-[9px] px-2 py-1 border border-champagne/40 text-champagne whitespace-nowrap">
+                {item.badge}
+              </span>
+            )}
+          </div>
           <p className="text-zinc-400 leading-relaxed text-sm sm:text-base max-w-md">
             {item.desc}
           </p>
+          {item.meta && (
+            <div className="mt-4 pt-4 border-t border-white/5 font-mono-ui text-[11px] text-zinc-500 tracking-wide">
+              {item.meta}
+            </div>
+          )}
+          {(item.cta_href || item.cta2_href) && (
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+              {item.cta_href && (
+                <a
+                  href={item.cta_href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 label-mono text-champagne hover:text-white transition-colors group/cta"
+                  data-testid={`service-cta-${k}`}
+                >
+                  {item.cta_label}
+                  <span className="transition-transform group-hover/cta:translate-x-1">→</span>
+                </a>
+              )}
+              {item.cta2_href && (
+                <a
+                  href={item.cta2_href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 label-mono text-zinc-400 hover:text-champagne transition-colors group/cta2"
+                  data-testid={`service-cta2-${k}`}
+                >
+                  {item.cta2_label}
+                  <span className="transition-transform group-hover/cta2:translate-x-1">→</span>
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </article>

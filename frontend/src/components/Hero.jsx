@@ -1,4 +1,5 @@
 import HeroScene from "./HeroScene";
+import SectionBoundary from "./SectionBoundary";
 import { useI18n } from "../i18n/I18nContext";
 import { ArrowRight } from "@phosphor-icons/react";
 
@@ -20,7 +21,10 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
 
       {/* 3D scene */}
-      <HeroScene />
+      {/* El 3D va aislado: si el GPU falla, cae el adorno, nunca la web */}
+      <SectionBoundary silent>
+        <HeroScene />
+      </SectionBoundary>
 
       {/* Vignette */}
       <div className="absolute inset-0 bg-radial-vignette pointer-events-none" style={{
@@ -41,7 +45,7 @@ export default function Hero() {
             {t.hero.subtitle}
           </p>
           <div className="flex flex-wrap gap-4">
-            <a href="#contact" className="btn-gold group" data-testid="hero-cta-primary">
+            <a href="https://t.me/TheMarketKilla" className="btn-gold group" data-testid="hero-cta-primary" target="_blank" rel="noopener noreferrer">
               {t.hero.cta_primary}
               <ArrowRight size={14} weight="bold" className="ml-2 transition-transform group-hover:translate-x-1" />
             </a>
@@ -51,12 +55,12 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats — datos verificables, no métricas inventadas */}
         <div className="mt-24 grid grid-cols-1 sm:grid-cols-3 gap-px bg-white/5 max-w-4xl border border-white/5">
           {[
-            { v: "12.4M+", l: t.hero.stat_a },
-            { v: "$84M", l: t.hero.stat_b },
-            { v: "37", l: t.hero.stat_c },
+            { v: "+10", l: t.hero.stat_a },
+            { v: "+500", l: t.hero.stat_b },
+            { v: "100%", l: t.hero.stat_c },
           ].map((s) => (
             <div key={s.l} className="bg-[#070707] p-6 sm:p-8" data-testid={`hero-stat-${s.l.replace(/\s+/g,'-').toLowerCase()}`}>
               <div className="font-display text-3xl sm:text-4xl text-white tracking-tighter mb-2">{s.v}</div>

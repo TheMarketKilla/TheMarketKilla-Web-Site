@@ -62,7 +62,13 @@ export default function Header() {
               </button>
             ))}
           </div>
-          <a href="#contact" className="hidden lg:inline-flex btn-gold py-2 px-5 text-[10px]" data-testid="header-cta">
+          <a
+            href="https://t.me/TheMarketKilla"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden lg:inline-flex btn-gold py-2 px-5 text-[10px]"
+            data-testid="header-cta"
+          >
             {t.nav.cta}
           </a>
           <button
@@ -90,7 +96,13 @@ export default function Header() {
                 {l.label}
               </a>
             ))}
-            <a href="#contact" onClick={() => setOpen(false)} className="btn-gold py-2 px-5 text-[10px] self-start">
+            <a
+              href="https://t.me/TheMarketKilla"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="btn-gold py-2 px-5 text-[10px] self-start"
+            >
               {t.nav.cta}
             </a>
           </div>

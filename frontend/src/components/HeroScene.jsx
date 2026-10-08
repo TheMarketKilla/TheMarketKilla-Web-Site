@@ -1,21 +1,58 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+
+/**
+ * Comprueba si el navegador puede crear un contexto WebGL.
+ * Sin esto, `new THREE.WebGLRenderer()` LANZA un error que tumba toda la app
+ * (el ErrorBoundary global lo captura y el usuario ve "Algo salió mal").
+ */
+function canUseWebGL() {
+  try {
+    const canvas = document.createElement("canvas");
+    const gl =
+      canvas.getContext("webgl2") ||
+      canvas.getContext("webgl") ||
+      canvas.getContext("experimental-webgl");
+    if (!gl) return false;
+    // Liberar el contexto de prueba
+    const lose = gl.getExtension && gl.getExtension("WEBGL_lose_context");
+    if (lose) lose.loseContext();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 export default function HeroScene() {
   const mountRef = useRef(null);
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    setEnabled(canUseWebGL());
+  }, []);
 
   useEffect(() => {
     const mount = mountRef.current;
-    if (!mount) return;
+    if (!mount || !enabled) return;
 
-    const width = mount.clientWidth;
-    const height = mount.clientHeight;
+    const width = mount.clientWidth || 1;
+    const height = mount.clientHeight || 1;
+
+    let renderer;
+    let frameId;
+
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (err) {
+      // Sin WebGL simplemente no pintamos el adorno. La web sigue completa.
+      console.warn("HeroScene: WebGL no disponible, se omite el 3D.", err?.message);
+      return;
+    }
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     camera.position.set(0, 0, 5.5);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
@@ -103,12 +140,12 @@ export default function HeroScene() {
     const pointer = { x: 0, y: 0 };
     const onPointerMove = (e) => {
       const rect = mount.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
     };
     window.addEventListener("pointermove", onPointerMove);
 
-    let frameId;
     const clock = new THREE.Clock();
     const animate = () => {
       const t = clock.getElapsedTime();
@@ -131,14 +168,20 @@ export default function HeroScene() {
       group.rotation.y += (pointer.x * 0.4 - group.rotation.y) * 0.04;
       group.rotation.x += (-pointer.y * 0.2 - group.rotation.x) * 0.04;
 
-      renderer.render(scene, camera);
+      try {
+        renderer.render(scene, camera);
+      } catch (err) {
+        // Si el contexto se pierde a media animación, paramos sin romper nada.
+        console.warn("HeroScene: contexto WebGL perdido, se detiene el 3D.");
+        return;
+      }
       frameId = requestAnimationFrame(animate);
     };
     animate();
 
     const onResize = () => {
-      const w = mount.clientWidth;
-      const h = mount.clientHeight;
+      const w = mount.clientWidth || 1;
+      const h = mount.clientHeight || 1;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -162,7 +205,7 @@ export default function HeroScene() {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [enabled]);
 
   return (
     <div

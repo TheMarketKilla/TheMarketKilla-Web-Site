@@ -1,30 +1,47 @@
-# TheMarketKilla — Trading & Market Intelligence Platform
+# 📄 TheMarketKilla-Web-Site
 
-Plataforma web profesional para monitoreo de mercados financieros en tiempo real, con precios de criptomonedas (BTC, ETH, XRP, GOLD/PAXG), gráficos interactivos y servicios de trading.
+Web oficial de **TheMarketKilla** — trading automatizado (robots/EA), CopyTrading, Oro (XAUUSD) y Crypto.
 
-## 🚀 Stack Tecnológico
+- **Producción:** https://the-market-killa-web-site.vercel.app
+- **Repo:** https://github.com/TheMarketKilla/TheMarketKilla-Web-Site
 
-- **Frontend:** React (CRA) + craco, Tailwind CSS v3, Framer Motion, shadcn/ui
-- **Backend:** FastAPI + Python (data en JSON)
-- **API Externa:** Binance API
-- **3D/Visualización:** Three.js (HeroScene), Recharts
-- **Despliegue:** Vercel
+## 🚀 Stack
 
-## 🛠 Desarrollo Local
+- **Frontend:** React 19 + CRA/craco · Tailwind CSS v3 · Framer Motion · shadcn/ui · Phosphor Icons · Three.js (hero) · Recharts
+- **Datos de mercado:** API pública de Binance (ticker 24h + klines) con fallback a mock
+- **i18n:** ES / EN propio (`src/i18n/translations.js`)
+- **Deploy:** Vercel (proyecto `the-market-killa-web-site`, root `frontend/`, output `build`)
+
+## 🛠 Desarrollo local
 
 ```bash
-# Frontend
 cd frontend
 npm install --legacy-peer-deps
-npm start
-
-# Backend (opcional)
-cd backend
-pip install -r requirements.txt
-uvicorn server:app --reload --port 8000
+npm start          # http://localhost:3000
+npm run build      # build de producción
 ```
 
-## 🌐 Links
+## 🚀 Deploy
 
-- **Web:** https://the-market-killa-web-site.vercel.app
-- **GitHub:** https://github.com/TheMarketKilla/TheMarketKilla-Web-Site
+Proyecto Vercel ya vinculado (CLI + token del vault). Desde `frontend/`:
+
+```bash
+set -a; source ~/.hermes/vault/vercel.env; set +a
+npx vercel deploy --prod --yes --token "$VERCEL_TOKEN"
+```
+
+> Detalle del flujo → skill `themarketkilla-web` y skill `deploy-vercel`.
+
+## 📁 Estructura
+
+```
+frontend/
+  src/
+    components/     Header · Hero · HeroScene · PriceTicker · MarketsPanel ·
+                    ServicesSection · PricingSection · ContactSection · Footer
+    data/           mockData.js (fallback de precios)
+    hooks/          useBinanceData.js (Binance pública)
+    i18n/           I18nContext.jsx · translations.js (ES/EN)
+  public/           index.html
+backend/            (legacy, sin uso — el sitio es estático)
+```

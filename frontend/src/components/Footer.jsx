@@ -19,7 +19,7 @@ export default function Footer() {
             <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">{t.footer.tagline}</p>
           </div>
           <div className="md:col-span-3">
-            <div className="label-mono mb-4">NAV</div>
+            <div className="label-mono mb-4">{t.footer.nav}</div>
             <ul className="space-y-2 text-sm text-zinc-400">
               <li><a href="#services" className="hover:text-champagne">{t.nav.services}</a></li>
               <li><a href="#markets" className="hover:text-champagne">{t.nav.markets}</a></li>
@@ -28,8 +28,29 @@ export default function Footer() {
             </ul>
           </div>
           <div className="md:col-span-4">
-            <div className="label-mono mb-4">DESK</div>
-            <p className="text-sm text-zinc-400 mb-2">desk@themarketkilla.com</p>
+            <div className="label-mono mb-4">{t.footer.contact}</div>
+            <ul className="space-y-2 text-sm text-zinc-400">
+              <li>
+                <a href="https://t.me/TheMarketKilla" target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                  Telegram · @TheMarketKilla
+                </a>
+              </li>
+              <li>
+                <a href="https://t.me/The_Market_Killa" target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                  Canal · @The_Market_Killa
+                </a>
+              </li>
+              <li>
+                <a href="mailto:themarketkilla@hotmail.com" className="hover:text-champagne">
+                  themarketkilla@hotmail.com
+                </a>
+              </li>
+              <li>
+                <a href="https://www.youtube.com/@themarketkilla" target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                  YouTube · @themarketkilla
+                </a>
+              </li>
+            </ul>
             <p className="text-xs text-zinc-600 leading-relaxed mt-4">{t.footer.legal}</p>
           </div>
         </div>

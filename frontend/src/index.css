@@ -188,6 +188,18 @@ body {
     animation: pulse-gold 2.4s ease-in-out infinite;
 }
 
+/* Chip de descuento: borde dorado con brillo suave, en armonía con la marca */
+@keyframes pulse-discount {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(229,193,88,0.5); }
+    50% { box-shadow: 0 0 0 7px rgba(229,193,88,0); }
+}
+.pulse-discount {
+    animation: pulse-discount 2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+    .pulse-discount, .pulse-gold { animation: none; }
+}
+
 @layer base {
     [data-debug-wrapper="true"] { display: contents !important; }
 }
