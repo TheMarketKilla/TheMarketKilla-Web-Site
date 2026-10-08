@@ -14,7 +14,7 @@ const CHANNELS = [
   },
   {
     key: "email",
-    href: "mailto:dannyrock824@gmail.com",
+    href: "mailto:themarketkilla@hotmail.com",
     Icon: Envelope,
   },
 ];
