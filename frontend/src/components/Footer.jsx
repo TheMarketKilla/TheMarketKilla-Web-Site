@@ -52,6 +52,10 @@ export default function Footer() {
               </li>
             </ul>
             <p className="text-xs text-zinc-600 leading-relaxed mt-4">{t.footer.legal}</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
+              <a href="/terminos" className="text-xs text-zinc-500 hover:text-champagne transition-colors">{t.footer.terms}</a>
+              <a href="/privacidad" className="text-xs text-zinc-500 hover:text-champagne transition-colors">{t.footer.privacy}</a>
+            </div>
           </div>
         </div>
         <div className="hairline mb-6" />

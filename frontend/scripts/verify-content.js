@@ -36,6 +36,15 @@ const checks={
  // --- el código fuente compilado (caza strings fuera del DOM) ---
  "bundle: sin gmail personal": !bundle.includes("dannyrock824"),
  "bundle: sin restos de emergent": !/emergent/i.test(bundle),
+ // --- auditoría web (2026-10-09): hero CTA, legales, og:image, sin disclaimer ---
+ "hero CTA 'Ver cómo funciona'": txt.includes("Ver cómo funciona"),
+ "hero CTA apunta a #services": hrefs.includes("#services"),
+ "footer link Términos": hrefs.includes("/terminos"),
+ "footer link Privacidad": hrefs.includes("/privacidad"),
+ "legal: página terminos.html existe": fs.existsSync(path.join(__dirname,"..","public","terminos.html")),
+ "legal: página privacidad.html existe": fs.existsSync(path.join(__dirname,"..","public","privacidad.html")),
+ "og:image 1200x630 existe": fs.existsSync(path.join(__dirname,"..","public","og-image.jpg")),
+ "sin disclaimer de riesgo": !/conlleva riesgo/i.test(txt) && !bundle.includes("riesgo de p\\xe9rdida"),
 };
 let bad=0;for(const[k,v]of Object.entries(checks)){console.log((v?"✅":"❌")+" "+k);if(!v)bad++}
 console.log("\nnº tiers:",d.querySelectorAll('[data-testid^="pricing-tier-"]').length,"| hrefs:",[...d.querySelectorAll("a[href]")].length);

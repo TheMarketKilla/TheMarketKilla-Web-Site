@@ -19,7 +19,7 @@ export const translations = {
       title_b: "Con reglas, no con emoción.",
       subtitle:
         "+10 años operando Forex, Oro y Crypto. +500 estrategias programadas. Robots que ejecutan la misma disciplina de siempre, 24/5, sin dudar y sin avaricia.",
-      cta_primary: "Hablar por Telegram",
+      cta_primary: "Ver cómo funciona",
       cta_secondary: "Ver mercados en vivo",
       stat_a: "Años en los mercados",
       stat_b: "Estrategias programadas",
@@ -162,11 +162,13 @@ export const translations = {
     },
     footer: {
       tagline: "+10 años operando. +500 estrategias programadas.",
-      legal: "TheMarketKilla no es una sociedad constituida. Los datos de la cuenta Master se publican en abierto. La operativa en mercados financieros conlleva riesgo de pérdida de capital.",
+      legal: "TheMarketKilla no es una sociedad constituida. Los datos de la cuenta Master se publican en abierto.",
       copy: "Todos los derechos reservados.",
       channels: "CANALES",
       contact: "CONTACTO",
       nav: "NAV",
+      terms: "Términos",
+      privacy: "Privacidad",
     },
   },
   en: {
@@ -183,7 +185,7 @@ export const translations = {
       title_b: "By rules, not emotion.",
       subtitle:
         "+10 years trading Forex, Gold and Crypto. +500 strategies programmed. Robots running the same discipline as always — 24/5, without hesitation, without greed.",
-      cta_primary: "Talk on Telegram",
+      cta_primary: "See how it works",
       cta_secondary: "Live markets",
       stat_a: "Years in the markets",
       stat_b: "Strategies programmed",
@@ -326,11 +328,13 @@ export const translations = {
     },
     footer: {
       tagline: "+10 years trading. +500 strategies programmed.",
-      legal: "TheMarketKilla is not a registered company. The Master account data is published openly. Trading financial markets carries the risk of capital loss.",
+      legal: "TheMarketKilla is not a registered company. The Master account data is published openly.",
       copy: "All rights reserved.",
       channels: "CHANNELS",
       contact: "CONTACT",
       nav: "NAV",
+      terms: "Terms",
+      privacy: "Privacy",
     },
   },
 };

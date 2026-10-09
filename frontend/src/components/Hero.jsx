@@ -44,7 +44,7 @@ export default function Hero() {
             {t.hero.subtitle}
           </p>
           <div className="flex flex-wrap gap-4">
-            <a href="https://t.me/TheMarketKilla" className="btn-gold group" data-testid="hero-cta-primary" target="_blank" rel="noopener noreferrer">
+            <a href="#services" className="btn-gold group" data-testid="hero-cta-primary">
               {t.hero.cta_primary}
               <ArrowRight size={14} weight="bold" className="ml-2 transition-transform group-hover:translate-x-1" />
             </a>
