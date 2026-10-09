@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Sitemap: una sola página (one-page). El dominio cambiará cuando Daniel
-     conecte el dominio propio -> actualizar aquí la etiqueta <loc>. -->
+<!-- Sitemap: una sola página (one-page). Dominio propio conectado 2026-10-09.
+     Canónico = www (el apex redirige 308 a www). -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://the-market-killa-web-site.vercel.app/</loc>
+    <loc>https://www.themarketkilla.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
