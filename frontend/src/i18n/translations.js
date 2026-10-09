@@ -30,7 +30,7 @@ export const translations = {
       kicker: "DATOS · BINANCE · TIEMPO REAL",
       title: "Sala de mercados",
       subtitle:
-        "Precios spot directos del libro de órdenes de Binance. BTC, ETH, XRP y oro tokenizado (PAXG) — actualizados cada 12 segundos.",
+        "Precios spot directos del libro de órdenes de Binance. BTC, ETH, XRP y oro tokenizado (PAXG) — actualizados cada 15 segundos.",
       change_24h: "24h",
       high: "Máx 24h",
       low: "Mín 24h",
@@ -38,7 +38,7 @@ export const translations = {
     },
     services: {
       kicker: "SERVICIOS · THEMARKETKILLA",
-      title: "Cuatro formas de operar conmigo.",
+      title: "Cuatro formas de operar conmigo. 👇",
       subtitle:
         "Del robot que trabaja solo al grupo donde guiamos el ciclo alcista. Elige por dónde entrar.",
       list: {
@@ -71,7 +71,7 @@ export const translations = {
           tag: "04",
           title: "Señales",
           badge: "PRÓXIMAMENTE",
-          desc: "Forex, Crypto, Índices y Metales. De 2 a 10 señales por semana, cada una con Stop Loss estricto, Take Profit, BreakEven y TrailingStop. Directas a Telegram.",
+          desc: "Forex, Crypto, Índices y Metales. De 2 a 10 señales por semana, cada una con Stop Loss estricto, Take Profit, BreakEven y TrailingStop. Entrega por canal privado.",
           meta: "Desde $30/mes",
         },
       },
@@ -97,6 +97,7 @@ export const translations = {
             "Mínimo $100 en tu cuenta",
             "Sin cuotas ni mensualidades",
           ],
+          note: "Gratis para todos los referidos de Roboforex. Sin cuotas ni mensualidades.",
         },
         {
           name: "ROBOT BREAKOUTS",
@@ -161,7 +162,7 @@ export const translations = {
     },
     footer: {
       tagline: "+10 años operando. +500 estrategias programadas.",
-      legal: "TheMarketKilla no es una sociedad constituida. Los datos de la cuenta Master se publican en abierto.",
+      legal: "TheMarketKilla no es una sociedad constituida. Los datos de la cuenta Master se publican en abierto. La operativa en mercados financieros conlleva riesgo de pérdida de capital.",
       copy: "Todos los derechos reservados.",
       channels: "CANALES",
       contact: "CONTACTO",
@@ -193,7 +194,7 @@ export const translations = {
       kicker: "DATA · BINANCE · REAL-TIME",
       title: "Market room",
       subtitle:
-        "Spot prices straight from Binance's order book. BTC, ETH, XRP and tokenized gold (PAXG) — refreshed every 12 seconds.",
+        "Spot prices straight from Binance's order book. BTC, ETH, XRP and tokenized gold (PAXG) — refreshed every 15 seconds.",
       change_24h: "24h",
       high: "24h High",
       low: "24h Low",
@@ -201,7 +202,7 @@ export const translations = {
     },
     services: {
       kicker: "SERVICES · THEMARKETKILLA",
-      title: "Four ways to trade with me.",
+      title: "Four ways to trade with me. 👇",
       subtitle:
         "From the robot that works on its own to the group where we ride the bull cycle. Pick your entry.",
       list: {
@@ -234,7 +235,7 @@ export const translations = {
           tag: "04",
           title: "Signals",
           badge: "COMING SOON",
-          desc: "Forex, Crypto, Indices and Metals. 2 to 10 signals a week, each with a strict Stop Loss, Take Profit, BreakEven and TrailingStop. Delivered to Telegram.",
+          desc: "Forex, Crypto, Indices and Metals. 2 to 10 signals a week, each with a strict Stop Loss, Take Profit, BreakEven and TrailingStop. Delivered through a private channel.",
           meta: "From $30/month",
         },
       },
@@ -260,6 +261,7 @@ export const translations = {
             "$100 minimum in your account",
             "No fees, no monthly payments",
           ],
+          note: "Free for all Roboforex referrals. No fees, no monthly payments.",
         },
         {
           name: "BREAKOUTS ROBOT",
@@ -324,7 +326,7 @@ export const translations = {
     },
     footer: {
       tagline: "+10 years trading. +500 strategies programmed.",
-      legal: "TheMarketKilla is not a registered company. The Master account data is published openly.",
+      legal: "TheMarketKilla is not a registered company. The Master account data is published openly. Trading financial markets carries the risk of capital loss.",
       copy: "All rights reserved.",
       channels: "CHANNELS",
       contact: "CONTACT",

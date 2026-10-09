@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# No hay nada privado en esta web: todo es público.
+# El contenido real (precios, contacto, canales) está a la vista.

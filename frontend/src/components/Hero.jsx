@@ -7,18 +7,17 @@ export default function Hero() {
   const { t } = useI18n();
   return (
     <section id="top" className="relative min-h-screen flex flex-col justify-center overflow-hidden grain" data-testid="hero-section">
-      {/* Texture backdrop */}
+      {/* Sin foto de fondo: el hero ahora lo sostienen el 3D y la marca.
+          (La textura de stock usaba mixBlendMode "screen" y aclaraba el 3D encima.) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+      {/* Halo dorado: da profundidad al 3D sin taparlo */}
       <div
-        className="absolute inset-0 opacity-15 pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1763805508094-901f2a79ff77?crop=entropy&cs=srgb&fm=jpg&q=85&w=2000)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          mixBlendMode: "screen",
+          background:
+            "radial-gradient(circle at 68% 45%, rgba(229,193,88,0.10) 0%, rgba(229,193,88,0.03) 35%, transparent 62%)",
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
 
       {/* 3D scene */}
       {/* El 3D va aislado: si el GPU falla, cae el adorno, nunca la web */}
