@@ -203,3 +203,9 @@ body {
 @layer base {
     [data-debug-wrapper="true"] { display: contents !important; }
 }
+
+/* FAQ de las sub-páginas de servicio: quita el marcador nativo del <summary> */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::marker { content: ""; }
+details[open] > summary .faq-plus { transform: rotate(45deg); }

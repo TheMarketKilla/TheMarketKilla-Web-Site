@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Sitemap: una sola página (one-page). Dominio propio conectado 2026-10-09.
+<!-- Sitemap: home + una sub-página dedicada por servicio. Dominio propio desde 2026-10-09.
      Canónico = www (el apex redirige 308 a www). -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.themarketkilla.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.themarketkilla.com/copytrading</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.themarketkilla.com/robot-breakouts</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.themarketkilla.com/bull-run-2026</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.themarketkilla.com/senales</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.themarketkilla.com/terminos</loc>

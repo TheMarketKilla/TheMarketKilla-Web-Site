@@ -1,9 +1,13 @@
+import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/I18nContext";
-import { Check } from "@phosphor-icons/react";
+import { Check, TelegramLogo } from "@phosphor-icons/react";
+import { SERVICE_ROUTES, TELEGRAM_DM } from "../lib/sitelinks";
 
 export default function PricingSection({ onSelectPlan }) {
   const { t } = useI18n();
   const tiers = t.pricing.tiers;
+  // Orden de los planes en translations.js ↔ slug de servicio
+  const SLUGS = ["copytrading", "breakouts", "bullrun", "senales"];
 
   return (
     <section id="pricing" className="py-24 sm:py-32 px-6 lg:px-12 relative" data-testid="pricing-section">
@@ -85,15 +89,24 @@ export default function PricingSection({ onSelectPlan }) {
                     {tier.note}
                   </p>
                 )}
-                <a
-                  href="https://t.me/TheMarketKilla"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => onSelectPlan?.(tier.name)}
+                {/* Cada acceso lleva a la sub-página de ese servicio */}
+                <Link
+                  to={SERVICE_ROUTES[SLUGS[idx]]}
                   className={`${featured ? "btn-gold" : "btn-ghost"} w-full text-center mt-6`}
                   data-testid={`pricing-cta-${slug}`}
                 >
-                  {t.pricing.cta}
+                  {t.pricing.tier_cta}
+                </Link>
+                {/* Contacto directo: máxima facilidad para contratar */}
+                <a
+                  href={TELEGRAM_DM}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 w-full text-center inline-flex items-center justify-center gap-2 border border-champagne/30 text-champagne/90 hover:text-champagne hover:border-champagne/70 hover:bg-champagne/5 transition-colors py-3 label-mono text-[11px]"
+                  data-testid={`pricing-hire-${slug}`}
+                >
+                  <TelegramLogo size={14} weight="fill" />
+                  {t.pricing.hire_cta}
                 </a>
               </div>
             );

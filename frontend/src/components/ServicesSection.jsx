@@ -1,10 +1,15 @@
+import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/I18nContext";
-import { Robot, Copy, ChartLineUp, Lightning } from "@phosphor-icons/react";
+import { Robot, Copy, ChartLineUp, Lightning, ArrowRight } from "@phosphor-icons/react";
+import { SERVICE_ROUTES } from "../lib/sitelinks";
 
-const ICONS = { robots: Robot, copy: Copy, invest: ChartLineUp, signals: Lightning };
+const ICONS = { copytrading: Copy, breakouts: Robot, bullrun: ChartLineUp, senales: Lightning };
 
 function ServiceCard({ k, item }) {
-  const Icon = ICONS[k];
+  const { t } = useI18n();
+  const Icon = ICONS[k] || Copy;
+  const to = SERVICE_ROUTES[k];
+
   return (
     <article
       className="relative group matte-card overflow-hidden transition-all duration-500 hover:border-champagne/40 h-full flex flex-col"
@@ -19,16 +24,16 @@ function ServiceCard({ k, item }) {
             <div className="w-11 h-11 border border-champagne/40 flex items-center justify-center text-champagne">
               <Icon size={22} weight="duotone" />
             </div>
-            <div className="label-mono text-champagne">{item.tag}</div>
+            <div className="label-mono text-champagne">{item?.tag}</div>
           </div>
           <div className="w-1.5 h-1.5 bg-champagne pulse-gold" />
         </div>
         {/* cuerpo: crece para que el pie quede anclado abajo en las 4 tarjetas */}
         <div className="mt-12 flex-1 flex flex-col">
           <h3 className="font-display text-2xl tracking-tight text-white leading-tight">
-            {item.title}
+            {item?.title}
           </h3>
-          {item.badge && (
+          {item?.badge && (
             <div className="pt-3">
               <span className="inline-block label-mono text-[9px] px-2 py-1 border border-champagne/40 text-champagne whitespace-nowrap">
                 {item.badge}
@@ -36,45 +41,37 @@ function ServiceCard({ k, item }) {
             </div>
           )}
           <p className="text-zinc-400 leading-relaxed text-sm sm:text-base">
-            {item.desc}
+            {item?.desc}
           </p>
           <div className="mt-auto pt-6">
-            {item.meta && (
+            {item?.meta && (
               <div className="pt-4 border-t border-white/5 font-mono-ui text-[11px] text-zinc-500 tracking-wide">
                 {item.meta}
               </div>
             )}
-            {(item.cta_href || item.cta2_href) && (
-              <div className="mt-4 flex flex-col items-start gap-2">
-                {item.cta_href && (
-                  <a
-                    href={item.cta_href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 label-mono text-champagne hover:text-white transition-colors group/cta"
-                    data-testid={`service-cta-${k}`}
-                  >
-                    {item.cta_label}
-                    <span className="transition-transform group-hover/cta:translate-x-1">→</span>
-                  </a>
-                )}
-                {item.cta2_href && (
-                  <a
-                    href={item.cta2_href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 label-mono text-zinc-400 hover:text-champagne transition-colors group/cta2"
-                    data-testid={`service-cta2-${k}`}
-                  >
-                    {item.cta2_label}
-                    <span className="transition-transform group-hover/cta2:translate-x-1">→</span>
-                  </a>
-                )}
-              </div>
-            )}
+            {/* Toda la tarjeta lleva a la sub-página dedicada del servicio */}
+            <Link
+              to={to}
+              className="mt-4 inline-flex items-center gap-2 label-mono text-champagne hover:text-white transition-colors group/cta"
+              data-testid={`service-cta-${k}`}
+            >
+              {t.services.card_cta}
+              <ArrowRight
+                size={13}
+                weight="bold"
+                className="transition-transform group-hover/cta:translate-x-1"
+              />
+            </Link>
           </div>
         </div>
       </div>
+      {/* Capa clicable de la tarjeta completa (debajo del CTA, que queda accesible encima) */}
+      <Link
+        to={to}
+        aria-label={item?.title}
+        className="absolute inset-0 z-20"
+        data-testid={`service-link-${k}`}
+      />
     </article>
   );
 }
@@ -82,7 +79,7 @@ function ServiceCard({ k, item }) {
 export default function ServicesSection() {
   const { t } = useI18n();
   const list = t.services.list;
-  const order = ["robots", "copy", "invest", "signals"];
+  const order = ["copytrading", "breakouts", "bullrun", "senales"];
   return (
     <section id="services" className="py-24 sm:py-32 px-6 lg:px-12 relative" data-testid="services-section">
       <div className="max-w-7xl mx-auto">

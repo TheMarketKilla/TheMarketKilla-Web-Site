@@ -12,6 +12,7 @@ import ServicesSection from "@/components/ServicesSection";
 import PricingSection from "@/components/PricingSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import ServicePage from "@/components/ServicePage";
 
 function Landing() {
   const [planInterest, setPlanInterest] = useState("");
@@ -33,9 +34,6 @@ function Landing() {
       <PricingSection onSelectPlan={onSelectPlan} />
       <ContactSection initialPlan={planInterest} />
       <Footer />
-      <Toaster theme="dark" position="top-right" toastOptions={{
-        style: { background: "#0a0a0a", border: "1px solid rgba(229,193,88,0.4)", color: "#fff", fontFamily: "JetBrains Mono", borderRadius: 0 }
-      }} />
     </div>
   );
 }
@@ -47,7 +45,15 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Landing />} />
+            {/* Una sub-página dedicada por servicio */}
+            <Route path="/copytrading" element={<ServicePage slug="copytrading" />} />
+            <Route path="/robot-breakouts" element={<ServicePage slug="breakouts" />} />
+            <Route path="/bull-run-2026" element={<ServicePage slug="bullrun" />} />
+            <Route path="/senales" element={<ServicePage slug="senales" />} />
           </Routes>
+          <Toaster theme="dark" position="top-right" toastOptions={{
+            style: { background: "#0a0a0a", border: "1px solid rgba(229,193,88,0.4)", color: "#fff", fontFamily: "JetBrains Mono", borderRadius: 0 }
+          }} />
         </BrowserRouter>
       </I18nProvider>
     </ErrorBoundary>
