@@ -2,8 +2,11 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/copytrading", "destination": "/index.html" },
+    { "source": "/robot-breakouts", "destination": "/index.html" },
+    { "source": "/bull-run-2026", "destination": "/index.html" },
+    { "source": "/senales", "destination": "/index.html" },
     { "source": "/terminos", "destination": "/terminos.html" },
-    { "source": "/privacidad", "destination": "/privacidad.html" },
-    { "source": "/((?!terminos|privacidad).*)", "destination": "/index.html" }
+    { "source": "/privacidad", "destination": "/privacidad.html" }
   ]
 }
