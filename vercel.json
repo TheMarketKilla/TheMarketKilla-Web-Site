@@ -2,9 +2,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "routes": [
-    { "handle": "filesystem" },
     { "src": "/terminos", "dest": "/terminos.html" },
     { "src": "/privacidad", "dest": "/privacidad.html" },
-    { "src": "/.*", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
