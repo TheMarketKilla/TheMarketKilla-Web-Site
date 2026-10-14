@@ -607,6 +607,8 @@ export const translations = {
       nav: "NAV",
       terms: "Términos",
       privacy: "Privacidad",
+      copyCanal: "Entrar al canal de CopyTrading",
+      roboforex: "Abrir cuenta en Roboforex",
     },
   },
   en: {
@@ -1211,6 +1213,8 @@ export const translations = {
       nav: "NAV",
       terms: "Terms",
       privacy: "Privacy",
+      copyCanal: "Join the CopyTrading channel",
+      roboforex: "Open a Roboforex account",
     },
   },
 };

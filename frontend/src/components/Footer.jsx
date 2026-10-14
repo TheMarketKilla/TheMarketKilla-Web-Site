@@ -1,4 +1,5 @@
 import { useI18n } from "../i18n/I18nContext";
+import { LINKS } from "../lib/sitelinks";
 
 export default function Footer() {
   const { t } = useI18n();
@@ -31,22 +32,32 @@ export default function Footer() {
             <div className="label-mono mb-4">{t.footer.contact}</div>
             <ul className="space-y-2 text-sm text-zinc-400">
               <li>
-                <a href="https://t.me/TheMarketKilla" target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                <a href={LINKS.dm} target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
                   Telegram · @TheMarketKilla
                 </a>
               </li>
               <li>
-                <a href="https://t.me/The_Market_Killa" target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                <a href={LINKS.canal} target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
                   Canal · @The_Market_Killa
                 </a>
               </li>
               <li>
-                <a href="mailto:themarketkilla@hotmail.com" className="hover:text-champagne">
+                <a href={LINKS.copyCanal} target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                  {t.footer.copyCanal}
+                </a>
+              </li>
+              <li>
+                <a href={LINKS.roboforex} target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                  {t.footer.roboforex}
+                </a>
+              </li>
+              <li>
+                <a href={LINKS.email} className="hover:text-champagne">
                   themarketkilla@hotmail.com
                 </a>
               </li>
               <li>
-                <a href="https://www.youtube.com/@themarketkilla" target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
+                <a href={LINKS.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-champagne">
                   YouTube · @themarketkilla
                 </a>
               </li>
