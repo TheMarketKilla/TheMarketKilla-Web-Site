@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/I18nContext";
 import Seo from "./Seo";
@@ -6,6 +6,49 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { ArrowRight, ArrowLeft, Check, Warning, X } from "@phosphor-icons/react";
 import { SERVICE_ROUTES } from "../lib/sitelinks";
+
+/*
+ * VideoHero — video sin controles que arranca solo al entrar en pantalla y
+ * queda en loop infinito. Si el visitante sale del viewport se pausa (ahorra
+ * CPU/batería) y al volver se reanuda. muted + playsInline = autoplay permitido.
+ */
+function AutoLoopVideo({ src, poster, className, ...rest }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!("IntersectionObserver" in window)) {
+      el.play().catch(() => {});
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) el.play().catch(() => {});
+        else el.pause();
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster={poster}
+      className={className}
+      {...rest}
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  );
+}
 
 /*
  * ServicePage — plantilla de sub-página de servicio.
@@ -233,18 +276,12 @@ export default function ServicePage({ slug }) {
 
         {page.proof.video && (
           <div className="matte-card overflow-hidden mb-4">
-            <video
-              controls
-              playsInline
-              muted
-              loop
-              preload="metadata"
+            <AutoLoopVideo
+              src={page.proof.video.src}
               poster={page.proof.video.poster}
               className="w-full h-auto bg-black"
               data-testid="service-video"
-            >
-              <source src={page.proof.video.src} type="video/mp4" />
-            </video>
+            />
             <div className="p-5 border-t border-white/5">
               <div className="label-mono text-champagne mb-1">{page.proof.video.label}</div>
               <p className="text-xs text-zinc-400 leading-relaxed">{page.proof.video.caption}</p>
@@ -303,6 +340,44 @@ export default function ServicePage({ slug }) {
                 </div>
               ))}
             </div>
+
+            {page.results && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center mt-12 pt-12 border-t border-white/5">
+                <div>
+                  <div className="label-mono mb-3 text-champagne">{page.results.kicker}</div>
+                  <h3 className="font-display text-2xl sm:text-3xl tracking-tighter font-medium text-white mb-4 leading-[1.1]">
+                    {page.results.title}
+                  </h3>
+                  <p className="text-sm text-zinc-400 leading-relaxed mb-6">{page.results.text}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {page.results.stats.map((s) => (
+                      <div key={s.label} className="matte-card p-4">
+                        <div className="font-display text-xl sm:text-2xl text-champagne leading-none mb-1">
+                          {s.value}
+                        </div>
+                        <div className="label-mono text-zinc-500">{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {page.results.note && (
+                    <p className="text-xs text-zinc-500 leading-relaxed mt-4">{page.results.note}</p>
+                  )}
+                </div>
+                <figure className="matte-card overflow-hidden">
+                  <img
+                    src={page.results.image.src}
+                    alt={page.results.image.alt}
+                    loading="lazy"
+                    className="w-full h-auto"
+                    data-testid="results-image"
+                  />
+                  <figcaption className="p-4 border-t border-white/5">
+                    <div className="label-mono text-champagne mb-1">{page.results.image.label}</div>
+                    <p className="text-xs text-zinc-400 leading-relaxed">{page.results.image.caption}</p>
+                  </figcaption>
+                </figure>
+              </div>
+            )}
           </div>
         </section>
       )}
