@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/I18nContext";
 import Seo from "./Seo";
 import Header from "./Header";
 import Footer from "./Footer";
-import { ArrowRight, ArrowLeft, Check, Warning, X } from "@phosphor-icons/react";
+import { ArrowRight, ArrowLeft, Check, Warning, X, MagnifyingGlassPlus } from "@phosphor-icons/react";
 import { SERVICE_ROUTES } from "../lib/sitelinks";
 
 /*
@@ -51,6 +51,285 @@ function AutoLoopVideo({ src, poster, className, ...rest }) {
 }
 
 /*
+ * MediaLightbox — amplía una pieza (foto o video) a pantalla completa.
+ * Se cierra con la X, con click en el fondo (fuera de la pieza) o con Escape.
+ * El video se reproduce en loop sin controles, igual que en la galería.
+ */
+function MediaLightbox({ item, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  if (!item) return null;
+  return (
+    <div
+      className="media-lightbox"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.label}
+      data-testid="media-lightbox"
+    >
+      <button
+        type="button"
+        className="media-lightbox-close"
+        onClick={onClose}
+        aria-label="Cerrar"
+        data-testid="lightbox-close"
+      >
+        <X size={20} weight="bold" />
+      </button>
+      <figure className="media-lightbox-inner" onClick={(e) => e.stopPropagation()}>
+        {item.type === "video" ? (
+          <video
+            src={item.src}
+            poster={item.poster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="media-lightbox-media"
+            data-testid="lightbox-video"
+          />
+        ) : (
+          <img
+            src={item.src}
+            alt={item.alt}
+            className="media-lightbox-media"
+            data-testid="lightbox-image"
+          />
+        )}
+        <figcaption className="media-lightbox-cap">
+          <span className="label-mono text-champagne">{item.label}</span>
+          {item.caption && (
+            <p className="text-xs text-zinc-400 leading-relaxed mt-1">{item.caption}</p>
+          )}
+        </figcaption>
+      </figure>
+    </div>
+  );
+}
+
+/*
+ * MediaCarousel — abanico simétrico de fotos que se desliza solo (bucle continuo,
+ * de derecha a izquierda) y que además se puede ARRASTRAR con el mouse o con el
+ * dedo en móvil. Al soltar, el deslizamiento suave continúa desde el punto donde
+ * lo dejaste. Cada pieza se amplía con un click (abre el lightbox).
+ * El video NO va aquí: tiene su propio espacio junto al bloque "SIN VENDERTE HUMO".
+ */
+function MediaCarousel({ items, onOpen }) {
+  const track = [...items, ...items]; // duplicado para el bucle continuo
+  const ref = useRef(null);
+  const drag = useRef({ active: false, startX: 0, lastX: 0, moved: false, justDragged: false });
+  const [paused, setPaused] = useState(false);
+
+  // Posición base del offset en píxeles (negativa: avanza hacia la izquierda).
+  // Se guarda fuera de React para que la animación no re-renderice nada.
+  const posRef = useRef(0);
+
+  // Reajusta el offset al rango del bucle, pero SÓLO cuando se sale por el
+  // borde (|offset| supera media anchura). Un desplazamiento pequeño dentro
+  // del rango queda intacto: así un arrastre corto nunca da un salto.
+  const normalize = (x, half) => {
+    if (half <= 0) return x;
+    let v = x;
+    while (v > 0) v -= half;
+    while (v <= -half) v += half;
+    return v;
+  };
+  // Variante suave para el final del arrastre: mantiene el punto visual exacto
+  // y sólo reencuadra si hace falta. Si el arrastre fue corto, no toca nada.
+  const softNormalize = (x, half) => {
+    if (half <= 0) return x;
+    if (x <= 0 && x > -half) return x;
+    return normalize(x, half);
+  };
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let raf;
+    let last = performance.now();
+    const SPEED = 24; // px por segundo (lento y elegante)
+
+    const tick = (now) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      const d = drag.current;
+      if (!d.active && !paused) {
+        posRef.current -= SPEED * dt;
+      }
+      // Reencuadre invisible del bucle cuando el offset se sale del rango
+      const half = el.scrollWidth / 2;
+      if (half > 0) posRef.current = softNormalize(posRef.current, half);
+      el.style.transform = `translate3d(${posRef.current}px,0,0)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [paused]);
+
+  // ── Arrastre con mouse o dedo ────────────────────────────────────────────
+  const startDrag = (x) => {
+    const d = drag.current;
+    d.active = true;
+    d.startX = x;
+    d.lastX = x;
+    d.moved = false;
+  };
+  // Normaliza el offset al rango del bucle [-half, 0] para que el arrastre
+  // pueda seguir indefinidamente.
+  const moveDrag = (x) => {
+    const d = drag.current;
+    if (!d.active) return;
+    const dx = x - d.lastX;
+    d.lastX = x;
+    posRef.current += dx;
+    if (Math.abs(x - d.startX) > 6) d.moved = true;
+    const el = ref.current;
+    if (el) {
+      // Sin normalizar: el track está duplicado, así que un offset fuera de
+      // rango sigue mostrando contenido válido y no hay salto visible.
+      el.style.transform = `translate3d(${posRef.current}px,0,0)`;
+    }
+  };
+  const endDrag = () => {
+    const d = drag.current;
+    d.active = false;
+    // Al soltar sólo reencuadramos si nos salimos del rango; si no, no tocamos.
+    const el = ref.current;
+    if (el) posRef.current = softNormalize(posRef.current, el.scrollWidth / 2);
+    // Si hubo arrastre real, el próximo click no debe abrir el lightbox.
+    d.justDragged = d.moved;
+  };
+
+  const onMouseDown = (e) => { startDrag(e.clientX); };
+  const onMouseMove = (e) => { if (drag.current.active) { moveDrag(e.clientX); } };
+  const onMouseUp = () => endDrag();
+  const onTouchStart = (e) => { startDrag(e.touches[0].clientX); };
+  const onTouchMove = (e) => { moveDrag(e.touches[0].clientX); };
+  const onTouchEnd = () => endDrag();
+
+  const handleOpen = (m) => {
+    // Si el usuario venía arrastrando, el click no abre el lightbox.
+    if (drag.current.justDragged) { drag.current.justDragged = false; drag.current.moved = false; return; }
+    onOpen(m);
+  };
+
+  return (
+    <div
+      className="media-carousel group/mc relative overflow-hidden border-y border-white/5"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => { setPaused(false); endDrag(); }}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      style={{ touchAction: "pan-y", cursor: "grab" }}
+    >
+      <div ref={ref} className="media-carousel-track py-4" data-testid="media-carousel-track">
+        {track.map((m, i) => (
+          <figure
+            key={`${m.src}-${i}`}
+            className="media-tile matte-card overflow-hidden shrink-0"
+          >
+            <button
+              type="button"
+              className="media-tile-media"
+              onClick={() => handleOpen(m)}
+              aria-label={`Ampliar: ${m.label}`}
+              data-testid="media-tile-open"
+            >
+              <img
+                src={m.src}
+                alt={m.alt}
+                loading="lazy"
+                draggable="false"
+                className="w-full h-full object-cover"
+              />
+              <span className="media-tile-zoom" aria-hidden="true">
+                <MagnifyingGlassPlus size={16} weight="bold" />
+              </span>
+            </button>
+            <figcaption className="media-tile-cap">
+              <span className="label-mono text-champagne">{m.label}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="media-carousel-fade media-carousel-fade-l" />
+      <div className="media-carousel-fade media-carousel-fade-r" />
+    </div>
+  );
+}
+
+/*
+ * VideoAndHonest — el video del robot en vivo a la izquierda y el bloque
+ * "SIN VENDERTE HUMO" a la derecha, en dos columnas equilibradas.
+ */
+function VideoAndHonest({ video, honest }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <figure className="matte-card overflow-hidden flex flex-col">
+        <button
+          type="button"
+          className="media-tile-media video-frame w-full"
+          onClick={() => setOpen(true)}
+          aria-label={`Ampliar: ${video.label}`}
+          data-testid="video-open"
+        >
+          <AutoLoopVideo
+            src={video.src}
+            poster={video.poster}
+            className="w-full h-full object-cover bg-black"
+            data-testid="service-video"
+          />
+          <span className="media-tile-zoom" aria-hidden="true">
+            <MagnifyingGlassPlus size={18} weight="bold" />
+          </span>
+        </button>
+        <figcaption className="p-5 border-t border-white/5">
+          <div className="label-mono text-champagne mb-1">{video.label}</div>
+          {video.caption && (
+            <p className="text-xs text-zinc-400 leading-relaxed">{video.caption}</p>
+          )}
+        </figcaption>
+      </figure>
+
+      <div>
+        <div className="label-mono mb-3 text-champagne">{honest.kicker}</div>
+        <h3 className="font-display text-2xl sm:text-3xl tracking-tighter font-medium text-white mb-6 leading-[1.1]">
+          {honest.title}
+        </h3>
+        <div className="space-y-4">
+          {honest.items.map((h) => (
+            <div key={h} className="flex items-start gap-3 text-sm text-zinc-400 leading-relaxed">
+              <Check size={16} weight="bold" className="text-champagne shrink-0 mt-0.5" />
+              <span>{h}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {open && (
+        <MediaLightbox item={{ type: "video", ...video }} onClose={() => setOpen(false)} />
+      )}
+    </div>
+  );
+}
+
+/*
  * ServicePage — plantilla de sub-página de servicio.
  * Toda la estructura es igual para las 4: lo único que cambia es el contenido
  * de `t.services.pages[slug]`. Sin cifras inventadas: solo datos reales de marca.
@@ -75,6 +354,7 @@ function Section({ kicker, title, children, className = "" }) {
 export default function ServicePage({ slug }) {
   const { t } = useI18n();
   const page = t.services.pages[slug];
+  const [lightbox, setLightbox] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -251,46 +531,14 @@ export default function ServicePage({ slug }) {
         <p className="text-zinc-400 leading-relaxed max-w-3xl mb-10">{page.proof.text}</p>
 
         {page.proof.shots.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {page.proof.shots.map((s) => (
-              <figure
-                key={s.src}
-                className="matte-card overflow-hidden flex flex-col group"
-              >
-                <div className="overflow-hidden bg-black">
-                  <img
-                    src={s.src}
-                    alt={s.alt}
-                    loading="lazy"
-                    className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
-                  />
-                </div>
-                <figcaption className="p-5 border-t border-white/5">
-                  <div className="label-mono text-champagne mb-1">{s.label}</div>
-                  <p className="text-xs text-zinc-400 leading-relaxed">{s.caption}</p>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        )}
-
-        {page.proof.video && (
-          <div className="matte-card overflow-hidden mb-4">
-            <AutoLoopVideo
-              src={page.proof.video.src}
-              poster={page.proof.video.poster}
-              className="w-full h-auto bg-black"
-              data-testid="service-video"
-            />
-            <div className="p-5 border-t border-white/5">
-              <div className="label-mono text-champagne mb-1">{page.proof.video.label}</div>
-              <p className="text-xs text-zinc-400 leading-relaxed">{page.proof.video.caption}</p>
-            </div>
-          </div>
+          <MediaCarousel
+            items={page.proof.shots.map((s) => ({ type: "image", ...s }))}
+            onOpen={setLightbox}
+          />
         )}
 
         {page.proof.links.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
             {page.proof.links.map((l) => (
               <a
                 key={l.href}
@@ -324,8 +572,73 @@ export default function ServicePage({ slug }) {
         )}
       </Section>
 
-      {/* ── HONESTIDAD (qué NO es) ─────────────────────────────── */}
-      {page.honest && (
+      {/* ── VIDEO EN VIVO + SIN VENDERTE HUMO ──────────────────── */}
+      {page.proof.video && page.honest && (
+        <section className="py-16 sm:py-20 px-6 lg:px-12 border-t border-white/5">
+          <div className="max-w-6xl mx-auto">
+            <VideoAndHonest video={page.proof.video} honest={page.honest} />
+          </div>
+        </section>
+      )}
+
+      {/* ── RESULTADOS ─────────────────────────────────────────── */}
+      {page.results && (
+        <section className="py-16 sm:py-20 px-6 lg:px-12 bg-[#080808] border-y border-white/5">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+              <div>
+                <div className="label-mono mb-3 text-champagne">{page.results.kicker}</div>
+                <h3 className="font-display text-2xl sm:text-3xl tracking-tighter font-medium text-white mb-4 leading-[1.1]">
+                  {page.results.title}
+                </h3>
+                <p className="text-sm text-zinc-400 leading-relaxed mb-6">{page.results.text}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {page.results.stats.map((s) => (
+                    <div key={s.label} className="matte-card p-4">
+                      <div className="font-display text-xl sm:text-2xl text-champagne leading-none mb-1">
+                        {s.value}
+                      </div>
+                      <div className="label-mono text-zinc-500">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+                {page.results.note && (
+                  <p className="text-xs text-zinc-500 leading-relaxed mt-4">{page.results.note}</p>
+                )}
+              </div>
+              <figure className="matte-card overflow-hidden">
+                <button
+                  type="button"
+                  className="media-tile-media w-full"
+                  onClick={() => setLightbox({ type: "image", ...page.results.image })}
+                  aria-label={`Ampliar: ${page.results.image.label}`}
+                  data-testid="results-image-open"
+                >
+                  <img
+                    src={page.results.image.src}
+                    alt={page.results.image.alt}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    data-testid="results-image"
+                  />
+                  <span className="media-tile-zoom" aria-hidden="true">
+                    <MagnifyingGlassPlus size={18} weight="bold" />
+                  </span>
+                </button>
+                <figcaption className="p-4 border-t border-white/5">
+                  <div className="label-mono text-champagne mb-1">{page.results.image.label}</div>
+                  <p className="text-xs text-zinc-400 leading-relaxed">{page.results.image.caption}</p>
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {lightbox && <MediaLightbox item={lightbox} onClose={() => setLightbox(null)} />}
+
+      {/* ── HONESTIDAD (qué NO es) — solo si no se mostró junto al video ── */}
+      {page.honest && !page.proof.video && (
         <section className="py-16 sm:py-20 px-6 lg:px-12 border-t border-white/5">
           <div className="max-w-6xl mx-auto">
             <div className="label-mono mb-3 text-champagne">{page.honest.kicker}</div>
@@ -335,49 +648,11 @@ export default function ServicePage({ slug }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {page.honest.items.map((h) => (
                 <div key={h} className="flex items-start gap-3 text-sm text-zinc-400 leading-relaxed">
-                  <X size={16} weight="bold" className="text-zinc-600 shrink-0 mt-0.5" />
+                  <Check size={16} weight="bold" className="text-champagne shrink-0 mt-0.5" />
                   <span>{h}</span>
                 </div>
               ))}
             </div>
-
-            {page.results && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center mt-12 pt-12 border-t border-white/5">
-                <div>
-                  <div className="label-mono mb-3 text-champagne">{page.results.kicker}</div>
-                  <h3 className="font-display text-2xl sm:text-3xl tracking-tighter font-medium text-white mb-4 leading-[1.1]">
-                    {page.results.title}
-                  </h3>
-                  <p className="text-sm text-zinc-400 leading-relaxed mb-6">{page.results.text}</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {page.results.stats.map((s) => (
-                      <div key={s.label} className="matte-card p-4">
-                        <div className="font-display text-xl sm:text-2xl text-champagne leading-none mb-1">
-                          {s.value}
-                        </div>
-                        <div className="label-mono text-zinc-500">{s.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                  {page.results.note && (
-                    <p className="text-xs text-zinc-500 leading-relaxed mt-4">{page.results.note}</p>
-                  )}
-                </div>
-                <figure className="matte-card overflow-hidden">
-                  <img
-                    src={page.results.image.src}
-                    alt={page.results.image.alt}
-                    loading="lazy"
-                    className="w-full h-auto"
-                    data-testid="results-image"
-                  />
-                  <figcaption className="p-4 border-t border-white/5">
-                    <div className="label-mono text-champagne mb-1">{page.results.image.label}</div>
-                    <p className="text-xs text-zinc-400 leading-relaxed">{page.results.image.caption}</p>
-                  </figcaption>
-                </figure>
-              </div>
-            )}
           </div>
         </section>
       )}

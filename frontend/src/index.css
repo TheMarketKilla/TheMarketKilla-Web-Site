@@ -209,3 +209,176 @@ details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 details > summary::marker { content: ""; }
 details[open] > summary .faq-plus { transform: rotate(45deg); }
+
+/* ── Galería de pruebas (sub-páginas de servicio) ───────────────────────────
+   Carrusel simétrico: todas las piezas (fotos y video) son cuadradas y del
+   mismo tamaño, y se deslizan lentamente de derecha a izquierda en bucle.
+   Se pausa al pasar el mouse (o al enfocar) para mirar una pieza con calma.  */
+.media-carousel-track {
+    display: flex;
+    gap: 1rem;
+    width: max-content;
+    will-change: transform;
+}
+.media-carousel { cursor: grab; }
+.media-carousel:active { cursor: grabbing; }
+/* El arrastre no debe seleccionar texto ni arrastrar imágenes */
+.media-carousel img { -webkit-user-drag: none; user-select: none; }
+
+.media-tile {
+    width: 232px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.media-tile:hover { border-color: rgba(229,193,88,0.4); transform: translateY(-3px); }
+.media-tile-media {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #000;
+}
+/* En la sección del video (2 columnas) el marco es CUADRADO 1:1:
+   el video completo entra encogido, sin recortar nada (letterbox). */
+.video-frame {
+    aspect-ratio: 1 / 1;
+    background: #080808;
+}
+.video-frame video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+.media-tile-media img,
+.media-tile-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.media-tile-cap {
+    padding: 0.7rem 0.85rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Difuminado de los bordes para que el bucle no tenga corte visible */
+.media-carousel-fade {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 90px;
+    pointer-events: none;
+    z-index: 2;
+}
+.media-carousel-fade-l { left: 0;  background: linear-gradient(to right, #050505, transparent); }
+.media-carousel-fade-r { right: 0; background: linear-gradient(to left,  #050505, transparent); }
+
+@media (max-width: 640px) {
+    .media-tile { width: 176px; }
+    .media-carousel-fade { width: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .media-carousel-track { animation: none; }
+}
+
+/* ── Lightbox: amplía una foto o el video en pantalla completa ─────────────
+   Se cierra con la X, con click fuera de la pieza o con la tecla Escape.    */
+.media-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: rgba(3, 3, 3, 0.94);
+    backdrop-filter: blur(6px);
+    animation: lb-fade 0.18s ease;
+}
+@keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.media-lightbox-inner {
+    max-width: min(1100px, 92vw);
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(229, 193, 88, 0.28);
+    background: #070707;
+    overflow: hidden;
+    animation: lb-pop 0.22s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+@keyframes lb-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+
+.media-lightbox-media {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 78vh;
+    margin: 0 auto;
+    object-fit: contain;
+    background: #000;
+}
+.media-lightbox-cap {
+    padding: 0.85rem 1.1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    text-align: center;
+}
+
+.media-lightbox-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 101;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(10, 10, 10, 0.75);
+    color: #fff;
+    cursor: pointer;
+    transition: border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.media-lightbox-close:hover {
+    border-color: #e5c158;
+    color: #e5c158;
+    transform: rotate(90deg);
+}
+
+/* Botón de zoom que aparece sobre cada pieza al pasar el mouse */
+.media-tile-media {
+    position: relative;
+    cursor: zoom-in;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    display: block;
+}
+.media-tile-zoom {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: rgba(5, 5, 5, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #e5c158;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+}
+.media-tile-media:hover .media-tile-zoom,
+.media-tile-media:focus-visible .media-tile-zoom {
+    opacity: 1;
+    transform: translateY(0);
+}

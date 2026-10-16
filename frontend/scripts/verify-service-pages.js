@@ -56,13 +56,31 @@ const PAGES = [
       "ArrowZigZag",
       "ftmo-certificado.jpg",
       "myfxbook-breakout-killa.jpg",
+      "breakouts-lib.mp4",
+      "breakouts-lib.jpg",
+      "gal-myfxbook-breakout-killa.jpg",
+      "gal-ftmo-certificado.jpg",
+      "gal-fundednext-certificado.jpg",
+      "fundednext-certificado.jpg",
+      "gal-e8-certificado.jpg",
+      "e8-certificado.jpg",
+      "gal-myfxbook-ftmo-phase1.jpg",
+      "gal-myfxbook-fundednext.jpg",
+      "FUNDEDNEXT · ELITE TRADER",
+      "E8 MARKETS · APROBADO",
+      "Challenges pasados. Historial certificado.",
+      "RESULTADO REAL · FTMO CHALLENGE",
+      "+10,27 %",
+      "1,69",
+      "SIN VENDERTE HUMO",
       "Pon el robot a operar",
     ],
+    selectors: ["results-image", "service-video", "media-carousel-track", "media-tile-open", "video-open", "results-image-open"],
   },
   {
     slug: "bullrun",
     route: "/bull-run-2026",
-    must: ["con guía, no a ciegas", "Solo 10", "$490", "Reservar mi plaza", "Lo que este grupo NO es"],
+    must: ["con guía, no a ciegas", "Solo 10", "$490", "Reservar mi plaza", "Lo que este grupo NO es."],
   },
   {
     slug: "senales",
@@ -121,6 +139,8 @@ function run(route) {
       const isAsset = /\.(jpg|mp4|png)$/.test(m);
       ok(`[${page.route}] "${m}"`, isAsset ? inner.includes(m) : lower.includes(m.toLowerCase()));
     }
+    for (const sel of page.selectors || [])
+      ok(`[${page.route}] selector "${sel}"`, !!doc.querySelector(`[data-testid="${sel}"]`));
     for (const f of FORBIDDEN) ok(`[${page.route}] sin "${f}"`, !lower.includes(f.toLowerCase()));
     if (errors.length) console.log(`   errores [${page.route}]:`, errors.slice(0, 2).join(" | ").slice(0, 200));
     dom.window.close();
