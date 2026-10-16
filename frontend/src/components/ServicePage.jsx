@@ -124,6 +124,26 @@ function MediaLightbox({ item, onClose }) {
  * lo dejaste. Cada pieza se amplía con un click (abre el lightbox).
  * El video NO va aquí: tiene su propio espacio junto al bloque "SIN VENDERTE HUMO".
  */
+// Reajusta el offset al rango del bucle [-half, 0], pero SÓLO cuando se sale por
+// el borde (|offset| supera media anchura). Un desplazamiento pequeño dentro del
+// rango queda intacto: así un arrastre corto nunca da un salto visual.
+// Nivel de módulo a propósito: son puras y así no son deps del useEffect.
+function normalize(x, half) {
+  if (half <= 0) return x;
+  let v = x;
+  while (v > 0) v -= half;
+  while (v <= -half) v += half;
+  return v;
+}
+// Variante suave para el final del arrastre y el tick del bucle: mantiene el
+// punto visual exacto y sólo reencuadra si hace falta. Si el arrastre fue corto,
+// no toca nada.
+function softNormalize(x, half) {
+  if (half <= 0) return x;
+  if (x <= 0 && x > -half) return x;
+  return normalize(x, half);
+}
+
 function MediaCarousel({ items, onOpen }) {
   const track = [...items, ...items]; // duplicado para el bucle continuo
   const ref = useRef(null);
@@ -133,24 +153,6 @@ function MediaCarousel({ items, onOpen }) {
   // Posición base del offset en píxeles (negativa: avanza hacia la izquierda).
   // Se guarda fuera de React para que la animación no re-renderice nada.
   const posRef = useRef(0);
-
-  // Reajusta el offset al rango del bucle, pero SÓLO cuando se sale por el
-  // borde (|offset| supera media anchura). Un desplazamiento pequeño dentro
-  // del rango queda intacto: así un arrastre corto nunca da un salto.
-  const normalize = (x, half) => {
-    if (half <= 0) return x;
-    let v = x;
-    while (v > 0) v -= half;
-    while (v <= -half) v += half;
-    return v;
-  };
-  // Variante suave para el final del arrastre: mantiene el punto visual exacto
-  // y sólo reencuadra si hace falta. Si el arrastre fue corto, no toca nada.
-  const softNormalize = (x, half) => {
-    if (half <= 0) return x;
-    if (x <= 0 && x > -half) return x;
-    return normalize(x, half);
-  };
 
   useEffect(() => {
     const el = ref.current;
