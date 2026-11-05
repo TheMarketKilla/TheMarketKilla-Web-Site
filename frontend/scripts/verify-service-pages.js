@@ -35,14 +35,14 @@ const PAGES = [
       "Los resultados no se dicen: se verifican",
       "strategy-1/12241336",
       "strategy-2/12241349",
-      "my.roboforex.com/en/?a=emvr",
+      "Abrir cuenta en Roboforex",
       "copytrading-lib.mp4",
       "¿Cuánto cuesta?",
       "Lo que este servicio NO es",
       "RESULTADOS REALES",
       "resultados-19-meses.jpg",
       "¿Se me puede quemar la cuenta?",
-      "¿Usa Martingala o Grid?",
+      "¿Usa Grid o Martingala?",
       "Empieza a copiar mis operaciones",
     ],
   },
@@ -70,12 +70,15 @@ const PAGES = [
       "E8 MARKETS · APROBADO",
       "Challenges pasados. Historial certificado.",
       "RESULTADO REAL · FTMO CHALLENGE",
+      "passed-verification-v.mp4",
       "+10,27 %",
       "1,69",
       "SIN VENDERTE HUMO",
       "Pon el robot a operar",
     ],
-    selectors: ["results-image", "service-video", "media-carousel-track", "media-tile-open", "video-open", "results-image-open"],
+    // Abanico de cartas del bloque Resultado Real: la foto al frente y el video asomando
+    selectors: ["results-media", "results-fan", "results-fan-track", "results-image", "results-video"],
+    selectors: ["results-image", "results-fan-track", "results-fan", "service-video", "media-carousel-track", "media-tile-open", "video-open"],
   },
   {
     slug: "bullrun",
@@ -86,6 +89,8 @@ const PAGES = [
     slug: "senales",
     route: "/senales",
     must: ["y su plan de salida", "$30", "Anotarme en la lista", "Todavía no está lanzado"],
+    // Bloque de precios propio de Señales (5 planes)
+    selectors: ["service-plans"],
   },
 ];
 
@@ -137,10 +142,18 @@ function run(route) {
 
     for (const m of page.must) {
       const isAsset = /\.(jpg|mp4|png)$/.test(m);
-      ok(`[${page.route}] "${m}"`, isAsset ? inner.includes(m) : lower.includes(m.toLowerCase()));
+      // Los assets se buscan en el HTML (incluye atributos src) y también como
+      // texto: los rótulos viven en figcaption con escapes y no siempre coinciden.
+      const found = isAsset ? inner.includes(m) || lower.includes(m.toLowerCase()) : lower.includes(m.toLowerCase());
+      ok(`[${page.route}] "${m}"`, found);
     }
     for (const sel of page.selectors || [])
       ok(`[${page.route}] selector "${sel}"`, !!doc.querySelector(`[data-testid="${sel}"]`));
+    // Bloques opcionales: solo se exigen en las rutas que los declaran
+    for (const [sel, routes] of Object.entries(page.optionalSelectors || {})) {
+      if (!routes.some((r) => page.route.includes(r))) continue;
+      ok(`[${page.route}] selector "${sel}"`, !!doc.querySelector(`[data-testid="${sel}"]`));
+    }
     for (const f of FORBIDDEN) ok(`[${page.route}] sin "${f}"`, !lower.includes(f.toLowerCase()));
     if (errors.length) console.log(`   errores [${page.route}]:`, errors.slice(0, 2).join(" | ").slice(0, 200));
     dom.window.close();

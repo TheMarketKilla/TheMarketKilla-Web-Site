@@ -21,10 +21,9 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const sections = ["services", "markets", "pricing", "contact"];
+  const sections = ["services", "pricing", "contact"];
   const labels = {
     services: t.nav.services,
-    markets: t.nav.markets,
     pricing: t.nav.pricing,
     contact: t.nav.contact,
   };

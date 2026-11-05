@@ -6,8 +6,6 @@ import { I18nProvider } from "@/i18n/I18nContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import PriceTicker from "@/components/PriceTicker";
-import MarketsPanel from "@/components/MarketsPanel";
 import ServicesSection from "@/components/ServicesSection";
 import PricingSection from "@/components/PricingSection";
 import ContactSection from "@/components/ContactSection";
@@ -24,12 +22,13 @@ function Landing() {
     });
   };
 
+  /* Orden de la home (plan B): propuesta → servicios → precios → contacto.
+     Ticker y Sala de mercados salen de la home: no ayudan a decidir y
+     empujaban el precio a la pantalla 6 en móvil. */
   return (
     <div className="App relative" data-testid="landing-page">
       <Header />
       <Hero />
-      <PriceTicker />
-      <MarketsPanel />
       <ServicesSection />
       <PricingSection onSelectPlan={onSelectPlan} />
       <ContactSection initialPlan={planInterest} />

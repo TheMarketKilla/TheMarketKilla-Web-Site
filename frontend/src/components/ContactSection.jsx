@@ -23,7 +23,7 @@ export default function ContactSection() {
   const { t } = useI18n();
 
   return (
-    <section id="contact" className="py-24 sm:py-32 px-6 lg:px-12 relative" data-testid="contact-section">
+    <section id="contact" className="py-16 sm:py-32 px-6 lg:px-12 relative" data-testid="contact-section">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
           <div className="label-mono mb-3 text-champagne">{t.contact.kicker}</div>

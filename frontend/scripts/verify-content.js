@@ -23,7 +23,7 @@ const checks={
  "tier ROBOT BREAKOUTS": txt.includes("ROBOT BREAKOUTS"),
  "tier COPYTRADING": txt.includes("COPYTRADING"),
  "tier SEÑALES": txt.includes("SEÑALES"),
- "CTA canal copy visible": txt.includes("Entrar al canal de CopyTrading"),
+ "CTA canal copy visible": txt.includes("Canal de CopyTrading"),
  "4 tiers en la rejilla": d.querySelectorAll('[data-testid^="pricing-tier-"]').length===4,
  // --- DESTINOS de los enlaces (hrefs reales, no texto) ---
  "href mailto NUEVO (hotmail)": hrefs.includes("themarketkilla@hotmail.com"),
@@ -37,7 +37,7 @@ const checks={
  "bundle: sin gmail personal": !bundle.includes("dannyrock824"),
  "bundle: sin restos de emergent": !/emergent/i.test(bundle),
  // --- auditoría web (2026-10-09): hero CTA, legales, og:image, sin disclaimer ---
- "hero CTA 'Ver cómo funciona'": txt.includes("Ver cómo funciona"),
+ "hero CTA 'Ver servicios y precios'": txt.includes("Ver servicios y precios"),
  "hero CTA apunta a #services": hrefs.includes("#services"),
  "footer link Términos": hrefs.includes("/terminos"),
  "footer link Privacidad": hrefs.includes("/privacidad"),

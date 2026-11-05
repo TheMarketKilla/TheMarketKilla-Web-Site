@@ -18,7 +18,7 @@ function ServiceCard({ k, item }) {
       {/* Tarjetas limpias: sin foto. El peso visual lo llevan el icono dorado y la tipografia. */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/85 to-[#050505]/40" />
-      <div className="relative z-10 p-7 lg:p-8 h-full flex flex-col">
+      <div className="relative z-10 p-6 sm:p-7 lg:p-8 h-full flex flex-col">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 border border-champagne/40 flex items-center justify-center text-champagne">
@@ -29,7 +29,7 @@ function ServiceCard({ k, item }) {
           <div className="w-1.5 h-1.5 bg-champagne pulse-gold" />
         </div>
         {/* cuerpo: crece para que el pie quede anclado abajo en las 4 tarjetas */}
-        <div className="mt-12 flex-1 flex flex-col">
+        <div className="mt-6 sm:mt-12 flex-1 flex flex-col">
           <h3 className="font-display text-2xl tracking-tight text-white leading-tight">
             {item?.title}
           </h3>
@@ -81,7 +81,7 @@ export default function ServicesSection() {
   const list = t.services.list;
   const order = ["copytrading", "breakouts", "bullrun", "senales"];
   return (
-    <section id="services" className="py-24 sm:py-32 px-6 lg:px-12 relative" data-testid="services-section">
+    <section id="services" className="py-16 sm:py-32 px-6 lg:px-12 relative" data-testid="services-section">
       <div className="max-w-7xl mx-auto">
         <div className="mb-14 max-w-3xl">
           <div className="label-mono mb-3 text-champagne">{t.services.kicker}</div>

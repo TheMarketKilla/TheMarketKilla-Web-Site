@@ -214,6 +214,39 @@ details[open] > summary .faq-plus { transform: rotate(45deg); }
    Carrusel simétrico: todas las piezas (fotos y video) son cuadradas y del
    mismo tamaño, y se deslizan lentamente de derecha a izquierda en bucle.
    Se pausa al pasar el mouse (o al enfocar) para mirar una pieza con calma.  */
+/* ── Abanico rotativo del bloque Resultado Real ───────────────────────────
+   Recuadro 1:1 de alto fijo. La pista lleva las piezas (foto + video) en
+   fila; se desplaza de derecha a izquierda sola y se puede arrastrar con
+   el dedo. Nunca crece hacia abajo.                                     */
+.results-fan-track {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    width: max-content;
+    height: 100%;
+    gap: 8px;
+    will-change: transform;
+}
+.results-fan-item {
+    height: 100%;
+    aspect-ratio: 2 / 3;
+    flex: 0 0 auto;
+    overflow: hidden;
+    background: transparent;
+    cursor: zoom-in;
+}
+.results-fan-item img,
+.results-fan-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
 .media-carousel-track {
     display: flex;
     gap: 1rem;
@@ -327,6 +360,38 @@ details[open] > summary .faq-plus { transform: rotate(45deg); }
     text-align: center;
 }
 
+/* Flechas del lightbox para pasar de pieza sin cerrar */
+.media-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 110;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    line-height: 1;
+    color: #fff;
+    background: rgba(10, 10, 10, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+.media-lightbox-nav:hover {
+    border-color: #e5c158;
+    color: #e5c158;
+}
+.media-lightbox-nav.prev { left: max(0.75rem, calc(50% - min(700px, 48vw) - 60px)); }
+.media-lightbox-nav.next { right: max(0.75rem, calc(50% - min(700px, 48vw) - 60px)); }
+@media (max-width: 640px) {
+    .media-lightbox-nav { width: 38px; height: 38px; font-size: 22px; }
+    .media-lightbox-nav.prev { left: 0.5rem; }
+    .media-lightbox-nav.next { right: 0.5rem; }
+}
+
 .media-lightbox-close {
     position: absolute;
     top: 1.25rem;
@@ -359,6 +424,19 @@ details[open] > summary .faq-plus { transform: rotate(45deg); }
     background: transparent;
     display: block;
 }
+/* Icono de ampliar SIEMPRE visible en el abanico de Resultado Real */
+.media-tile-zoom.is-on {
+    opacity: 1;
+    transform: none;
+}
+/* El abanico de Resultado Real se amplía en grande: el lightbox gana tamaño */
+.media-lightbox.is-wide .media-lightbox-inner {
+    max-width: min(1400px, 96vw);
+}
+.media-lightbox.is-wide .media-lightbox-media {
+    max-height: 86vh;
+}
+
 .media-tile-zoom {
     position: absolute;
     right: 0.5rem;
