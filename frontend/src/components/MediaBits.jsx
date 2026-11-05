@@ -206,7 +206,15 @@ export function softNormalize(x, half) {
 }
 
 export function MediaCarousel({ items, onOpen }) {
-  const track = [...items, ...items]; // duplicado para el bucle continuo
+  // Las piezas se repiten hasta cubrir el contenedor y luego UNA vez más:
+  // con pocas piezas, dos copias no llenan la pantalla y se ve un hueco negro
+  // al pasar de la última a la primera.
+  const perCopy = Math.max(
+    items.length,
+    Math.ceil((typeof window !== "undefined" ? window.innerWidth : 1440) / 232) + 1,
+  );
+  const oneCopy = Array.from({ length: perCopy }, (_, n) => items[n % items.length]);
+  const track = [...oneCopy, ...oneCopy]; // duplicado para el bucle continuo
   const ref = useRef(null);
   const drag = useRef({ active: false, startX: 0, lastX: 0, moved: false, justDragged: false });
   const [paused, setPaused] = useState(false);

@@ -50,9 +50,48 @@ export function ResultsBlock({ results, onOpen }) {
  * segunda fila centrada para que el bucle no tenga hueco.
  * Alto FIJO: nunca crece hacia abajo.
  */
+// Una sola pieza de media: se muestra entera, sin abanico ni bucle.
+// (Vive aparte para no romper el orden de hooks de ResultsMedia.)
+function SingleResultsMedia({ piece, onOpen }) {
+  const only = piece;
+  const items = [{ ...only, wide: true, type: only.kind || "image" }];
+  return (
+    <figure className="matte-card overflow-hidden" data-testid="results-media">
+      <div className="relative w-full aspect-square overflow-hidden bg-black">
+        <button
+          type="button"
+          className="w-full h-full block cursor-zoom-in"
+          onClick={() => onOpen({ items, start: 0 })}
+          aria-label={`Ampliar: ${only.label}`}
+          data-testid="results-single"
+        >
+          <img
+            src={only.src}
+            alt={only.alt}
+            loading="lazy"
+            className="w-full h-full object-contain"
+            data-testid="results-image"
+          />
+        </button>
+        <span className="media-tile-zoom is-on" aria-hidden="true">
+          <MagnifyingGlassPlus size={18} weight="bold" />
+        </span>
+      </div>
+      <figcaption className="p-4 border-t border-white/5">
+        <div className="label-mono text-champagne mb-1">{only.label}</div>
+        <p className="text-xs text-zinc-400 leading-relaxed">{only.caption}</p>
+      </figcaption>
+    </figure>
+  );
+}
+
 function ResultsMedia({ results, onOpen }) {
   const pieces = [{ kind: "image", ...results.image }];
   if (results.video) pieces.push({ kind: "video", ...results.video });
+
+  // Una sola pieza → media estática, sin abanico ni bucle (se decide en el
+  // render, no con un early return: los hooks deben llamarse siempre igual).
+  const single = pieces.length === 1;
   const track = pieces.length > 1 ? [...pieces, ...pieces, ...pieces] : pieces;
   const ref = useRef(null);
   const drag = useRef({ active: false, lastX: 0, moved: false, justDragged: false });
@@ -108,6 +147,8 @@ function ResultsMedia({ results, onOpen }) {
     return { ...full, type: kind, wide: true };   // el lightbox usa `type`
   });
   const openAt = (idx) => onOpen({ items, start: Math.max(0, Math.min(idx, items.length - 1)) });
+
+  if (single) return <SingleResultsMedia piece={piece} onOpen={onOpen} />;
 
   return (
     <figure className="matte-card overflow-hidden" data-testid="results-media">
@@ -166,7 +207,7 @@ function ResultsMedia({ results, onOpen }) {
               className={`w-1.5 h-1.5 rounded-full ${n === shown ? "bg-champagne" : "bg-white/30"}`}
             />
           ))}
-          <span className="font-mono-ui text-[9px] text-zinc-400 ml-1">2 ARCHIVOS · TOCA PARA AMPLIAR</span>
+          <span className="font-mono-ui text-[9px] text-zinc-400 ml-1">{pieces.length} ARCHIVOS · TOCA PARA AMPLIAR</span>
         </div>
 
         <span className="media-tile-zoom is-on" aria-hidden="true">
