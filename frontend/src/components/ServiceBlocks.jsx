@@ -371,7 +371,10 @@ export function HonestBlock({ honest, video }) {
               aria-label={`Ampliar: ${video.label}`}
               data-testid="video-open"
             >
+              {/* key={src}: al navegar entre sub-páginas React reutiliza el mismo
+                  <video> y mantiene el medio anterior → remontarlo por src. */}
               <AutoLoopVideo
+                key={video.src}
                 src={video.src}
                 poster={video.poster}
                 className="w-full h-full object-cover bg-black"

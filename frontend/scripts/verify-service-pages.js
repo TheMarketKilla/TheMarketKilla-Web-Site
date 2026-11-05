@@ -45,6 +45,7 @@ const PAGES = [
       "¿Usa Grid o Martingala?",
       "Empieza a copiar mis operaciones",
     ],
+    ownVideo: "copytrading-lib.mp4",
   },
   {
     slug: "breakouts",
@@ -79,6 +80,7 @@ const PAGES = [
     // Abanico de cartas del bloque Resultado Real: la foto al frente y el video asomando
     selectors: ["results-media", "results-fan", "results-fan-track", "results-image", "results-video"],
     selectors: ["results-image", "results-fan-track", "results-fan", "service-video", "media-carousel-track", "media-tile-open", "video-open"],
+    ownVideo: "breakouts-lib.mp4",
   },
   {
     slug: "bullrun",
@@ -153,6 +155,13 @@ function run(route) {
     for (const [sel, routes] of Object.entries(page.optionalSelectors || {})) {
       if (!routes.some((r) => page.route.includes(r))) continue;
       ok(`[${page.route}] selector "${sel}"`, !!doc.querySelector(`[data-testid="${sel}"]`));
+    }
+    // El video del bloque "no es" debe ser el del servicio de ESTA página: al navegar
+    // entre sub-páginas React reutilizaba el <video> anterior (fix con key={src}).
+    const honestFig = [...doc.querySelectorAll("figure")].find((f) => f.querySelector('[data-testid="service-video"]'));
+    if (honestFig && page.ownVideo) {
+      const src = honestFig.querySelector("source")?.getAttribute("src") || "";
+      ok(`[${page.route}] video del servicio correcto (${page.ownVideo})`, src.includes(page.ownVideo));
     }
     for (const f of FORBIDDEN) ok(`[${page.route}] sin "${f}"`, !lower.includes(f.toLowerCase()));
     if (errors.length) console.log(`   errores [${page.route}]:`, errors.slice(0, 2).join(" | ").slice(0, 200));
